@@ -59,9 +59,15 @@
                                           <Font name="System Bold" size="12.0" />
                                        </font>
                                     </Button>
+                                    <Button fx:id="spritterButton" mnemonicParsing="false" onAction="#handleSpritterButtonAction" text="Split">
+                                       <font>
+                                          <Font name="System Bold Italic" size="12.0" />
+                                       </font>
+                                    </Button>
                                     <Button fx:id="removeButton" mnemonicParsing="false" onAction="#handleRemoveButtonAction" text="remove" />
                                     <Button fx:id="upButton" mnemonicParsing="false" onAction="#handleUpButtonAction" text="Up" />
                                     <Button fx:id="downButton" mnemonicParsing="false" onAction="#handleDownButtonAction" text="Down" />
+                                    <Button fx:id="previewButton" mnemonicParsing="false" onAction="#handlePreviewButtonAction" text="Previw" />
                                  </children>
                               </VBox>
                            </children>

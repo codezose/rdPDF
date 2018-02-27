@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -17,7 +18,6 @@ import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.SelectionMode;
@@ -25,6 +25,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.stage.FileChooser;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
+import org.apache.pdfbox.multipdf.Splitter;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  *
@@ -117,31 +119,24 @@ public class jDomXMLController implements Initializable {
         listView.getItems().add(file.getAbsolutePath());
     }
     
-    private void mergePDFmain(List<String> files) throws IOException{
-                    
-        // instantiatE PDFMergerUtility class
+    private void mergePDFmain(List<String> files) throws IOException{                    
         PDFMergerUtility pdfMerger = new PDFMergerUtility();
-        
-        // set destination file path
         pdfMerger.setDestinationFileName(files.get(0).substring(0, files.get(0).length() - 4)+"jDom.pdf");
-        
         try {
-            // add all source files, to be merged, to pdfMerger
             for(String s: files)
-                pdfMerger.addSource(new File(s));            
-            // merge documents
+                pdfMerger.addSource(new File(s));
             pdfMerger.mergeDocuments(null);
-            
         } catch (FileNotFoundException ex) {
             Logger.getLogger(jDomXMLController.class.getName()).log(Level.SEVERE, null, ex);
         } 
-        System.out.println("PDF Documents merged to a single file");
+        //System.out.println("PDF Documents merged to a single file");
     }
     
     private void putOnPagination(Pagination paging, File file){        
-        model = new JDomPdf(Paths.get(file.getAbsolutePath()));
-        paging.setPageCount(model.numPages());
+        
         paging.setPageFactory((Integer index) -> {
+            model = new JDomPdf(Paths.get(file.getAbsolutePath()));
+            paging.setPageCount(model.numPages());
             ImageView imageView = new ImageView(model.getImage(index));
             imageView.setFitHeight(760);
             imageView.setFitWidth(560);
@@ -163,5 +158,39 @@ public class jDomXMLController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         createAndConfigureFileChooser();
         listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    }    
+    }
+    
+    @FXML
+    void handlePreviewButtonAction(ActionEvent event) {        
+        putOnPagination(paging, new File(listView.getSelectionModel().getSelectedItem()));
+    }
+    
+    @FXML
+    void handleSpritterButtonAction(ActionEvent event) {
+        String srcFile =listView.getSelectionModel().getSelectedItem();
+        if((srcFile==null||"".equals(srcFile))&&listView.getItems().isEmpty())
+            return;
+        else if(!(srcFile==null||("".equals(srcFile))&&listView.getItems().isEmpty()))
+            srcFile=listView.getSelectionModel().getSelectedItem();
+        else
+            srcFile=listView.getItems().get(0);
+        //System.out.println(srcFile);
+        PDDocument document = null;
+        Splitter splitter = new Splitter();
+        try {
+            document = PDDocument.load(new File(srcFile));
+            List<PDDocument> Pages = splitter.split(document);
+            Iterator<PDDocument> iterator = Pages.listIterator();
+            int i = 1;
+            while(iterator.hasNext()) {
+               PDDocument pd = iterator.next();
+               pd.save(srcFile.substring(0, srcFile.length() - 4) + "_p_" + i++ + "_jDom.pdf");
+            }
+            document.close();
+        } catch (IOException ex) {
+            Logger.getLogger(jDomXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //System.out.println("Multiple PDF’s created");
+    }
+    
 }
