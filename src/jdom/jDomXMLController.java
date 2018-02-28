@@ -115,11 +115,15 @@ public class jDomXMLController implements Initializable {
     @FXML
     private void handleChooseButtonAction(ActionEvent event) {
         final File file = fileChooser.showOpenDialog(paging.getScene().getWindow());
+        if(null==file)
+            return;
         putOnPagination(paging, file);
         listView.getItems().add(file.getAbsolutePath());
     }
     
-    private void mergePDFmain(List<String> files) throws IOException{                    
+    private void mergePDFmain(List<String> files) throws IOException{
+        if(listView.getItems().size()<2)
+            return;
         PDFMergerUtility pdfMerger = new PDFMergerUtility();
         pdfMerger.setDestinationFileName(files.get(0).substring(0, files.get(0).length() - 4)+"jDom.pdf");
         try {
@@ -161,7 +165,9 @@ public class jDomXMLController implements Initializable {
     }
     
     @FXML
-    void handlePreviewButtonAction(ActionEvent event) {        
+    void handlePreviewButtonAction(ActionEvent event) {
+        if(null==listView.getSelectionModel().getSelectedItem() || ""==listView.getSelectionModel().getSelectedItem())
+            return;
         putOnPagination(paging, new File(listView.getSelectionModel().getSelectedItem()));
     }
     
