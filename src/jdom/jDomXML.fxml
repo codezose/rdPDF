@@ -49,12 +49,12 @@
                                           <Font name="System Bold Italic" size="24.0" />
                                        </font>
                                     </Label>
-                                    <Button fx:id="chooseButton" onAction="#handleChooseButtonAction" text="Guhitamo PDFs">
+                                    <Button fx:id="chooseButton" onAction="#handleChooseButtonAction" text="Choose PDFs">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
                                        </font>
                                     </Button>
-                                      <Button fx:id="bindButton" alignment="CENTER" contentDisplay="CENTER" onAction="#handleBindButtonAction" text="Gufatanya PDFs">
+                                      <Button fx:id="bindButton" alignment="CENTER" contentDisplay="CENTER" onAction="#handleBindButtonAction" text="Merge PDFs">
                                        <font>
                                           <Font name="System Bold" size="12.0" />
                                        </font>
