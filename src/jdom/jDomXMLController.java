@@ -23,6 +23,8 @@ import javafx.scene.control.Pagination;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.multipdf.Splitter;
@@ -113,6 +115,25 @@ public class jDomXMLController implements Initializable {
     }
     
     @FXML
+    void handleOnDragDrpped(DragEvent event) {
+        List<File> files = event.getDragboard().getFiles();
+        
+        for(File file: files)
+            if(null!=file){
+                listView.getItems().add(file.getName());        
+                putOnPagination(paging, files.get(0));
+    //        listView.getItems().add(files.get(0).getAbsolutePath());
+            }
+    }
+
+    @FXML
+    void handleOnDragOver(DragEvent event) {
+        Dragboard board = event.getDragboard();
+        if(board.hasFiles())
+            event.acceptTransferModes(TransferMode.ANY);
+    }
+    
+    @FXML
     private void handleChooseButtonAction(ActionEvent event) {
         final File file = fileChooser.showOpenDialog(paging.getScene().getWindow());
         if(null==file)
@@ -154,7 +175,7 @@ public class jDomXMLController implements Initializable {
     
     private void createAndConfigureFileChooser() {
         fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File("C:\\Users\\Dominique\\Desktop"));/*Paths.get(System.getProperty("user.home")).toFile()*/
+        fileChooser.setInitialDirectory(Paths.get(System.getProperty("user.home")).toFile());
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf", "*.PDF"));
     }
     
