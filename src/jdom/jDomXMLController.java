@@ -63,7 +63,7 @@ public class jDomXMLController implements Initializable {
     @FXML
     void handleRemoveButtonAction(ActionEvent event) {
 //        listView.getItems().removeAll(listView.getSelectionModel().getSelectedItems());
-        ListView<Integer> lv= new ListView();
+        ListView<Integer> lv= new ListView<>();
         lv.getItems().addAll(listView.getSelectionModel().getSelectedIndices().sorted());
         for(int i=lv.getItems().size()-1;i>=0;i--){
             listView.getItems().remove((int)lv.getItems().get(i));
@@ -117,13 +117,14 @@ public class jDomXMLController implements Initializable {
     @FXML
     void handleOnDragDrpped(DragEvent event) {
         List<File> files = event.getDragboard().getFiles();
-        
+        File lastFile=null;
         for(File file: files)
-            if(null!=file){
-                listView.getItems().add(file.getName());        
-                putOnPagination(paging, files.get(0));
-    //        listView.getItems().add(files.get(0).getAbsolutePath());
+            if(null!=file && "pdf".equalsIgnoreCase(file.getName().substring(file.getName().length() - 3, file.getName().length()))){
+                listView.getItems().add(file.getAbsolutePath());        
+                lastFile=file;
             }
+        if(lastFile!=null)
+            putOnPagination(paging, lastFile);
     }
 
     @FXML
@@ -157,8 +158,9 @@ public class jDomXMLController implements Initializable {
         //System.out.println("PDF Documents merged to a single file");
     }
     
-    private void putOnPagination(Pagination paging, File file){        
-        
+    private void putOnPagination(Pagination paging, File file){
+        if(model!=null)
+            model.closeModel();
         paging.setPageFactory((Integer index) -> {
             model = new JDomPdf(Paths.get(file.getAbsolutePath()));
             paging.setPageCount(model.numPages());
@@ -187,7 +189,7 @@ public class jDomXMLController implements Initializable {
     
     @FXML
     void handlePreviewButtonAction(ActionEvent event) {
-        if(null==listView.getSelectionModel().getSelectedItem() || ""==listView.getSelectionModel().getSelectedItem())
+        if(null==listView.getSelectionModel().getSelectedItem() || "".equals(listView.getSelectionModel().getSelectedItem()))
             return;
         putOnPagination(paging, new File(listView.getSelectionModel().getSelectedItem()));
     }
