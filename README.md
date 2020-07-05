@@ -1,2 +1,2 @@
 # rdPDF
-PDF documents merge, reorder, split, etc
+PDF document pages documents merge, reorder, split, etc
