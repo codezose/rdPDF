@@ -6,6 +6,7 @@
 package jdom;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -20,34 +21,45 @@ import org.apache.pdfbox.rendering.PDFRenderer;
  *
  * @author Dominique
  */
-public class JDomPdf {
+public class JDomPdf{
     private static final Logger logger = Logger.getLogger(JDomPdf.class.getName());
     
     
     private PDDocument document;
     private PDFRenderer renderer;
     
-    JDomPdf(Path path) {
+    JDomPdf(Path path){
         try {
             document = PDDocument.load(path.toFile());
             renderer = new PDFRenderer(document);
         } catch (IOException ex) {
-            throw new UncheckedIOException("PDDocument thorws IOException file=" + path, ex);
+            Logger.getLogger(JDomPdf.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    void closeModel(){
+    
+    JDomPdf(File f){
         try {
-            document.close();
+            document = PDDocument.load(f);
+            renderer = new PDFRenderer(document);
         } catch (IOException ex) {
             Logger.getLogger(JDomPdf.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    int numPages() {
+
+    public void closeModel(){
+        try {
+            if( document != null )
+                document.close();
+        } catch (IOException ex) {
+            Logger.getLogger(JDomPdf.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public int numPages() {
         return document.getPages().getCount();
     }   
-    
-    Image getImage(int pageNumber) {
+
+    public Image getImage(int pageNumber) {
         BufferedImage pageImage;
         try {
             pageImage = renderer.renderImage(pageNumber);
@@ -55,5 +67,9 @@ public class JDomPdf {
             throw new UncheckedIOException("PDFRenderer throws IOException", ex);
         }
         return SwingFXUtils.toFXImage(pageImage, null);
+    }
+    
+    PDDocument getDocument(){
+        return document;
     }
 }

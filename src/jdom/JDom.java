@@ -9,6 +9,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -19,12 +20,16 @@ public class JDom extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
+        System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
         Parent root = FXMLLoader.load(getClass().getResource("jDomXML.fxml"));
+        
+        
+        stage.getIcons().add(new Image("/resources/jSmith.png"));
         
         Scene scene = new Scene(root);
         
         stage.setScene(scene);
-        stage.setTitle("Fatanya PDFs by PDFBox");
+        stage.setTitle("Cura PDFs");
         stage.show();
     }
 
